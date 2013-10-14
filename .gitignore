@@ -1,3 +1,24 @@
+# local ActivePerl and NASM copy to build on Windows
+ActivePerl-*/
+nasm-*/
+# binary outputs and temporary directories
+out32dll/
+tmp32dll/
+x64/
+x86/
+
+#generated during configure for Win32/Win64
+MINFO
+inc32/
+ms/bcb.mak
+ms/libeay32.def
+ms/nt.mak
+ms/ntdll.mak
+ms/ssleay32.def
+ms/uptable.asm
+ms/uptable.obj
+ms/version32.rc
+
 # Object files
 *.o
 
