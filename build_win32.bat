@@ -3,7 +3,7 @@ IF NOT EXIST ActivePerl-* call download_ActivePerl.bat
 IF NOT EXIST nasm-* call download_nasm.bat
 
 IF EXIST ms\ntdll.mak (
-	nmake -f ms\ntdll.mak clean
+	nmake -f ms\ntdll.mak vclean
 ) 
 
 perl Configure VC-WIN32
@@ -13,3 +13,5 @@ nmake -f ms\ntdll.mak
 mkdir x86
 copy out32dll\libeay32.* x86\
 copy out32dll\ssleay32.* x86\
+
+EXIT /B 0
