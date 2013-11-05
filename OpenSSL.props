@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)inc32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -12,23 +9,10 @@
     <Link>
       <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PreBuildEvent>
-      <Command>IF NOT EXIST "$(MSBuildThisFileDirectory)x64\libeay32.dll" (
-      CD "$(MSBuildThisFileDirectory)"
-      CALL build_win64.bat
-      )</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <Link>
       <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <PreBuildEvent>
-      <Command>IF NOT EXIST "$(MSBuildThisFileDirectory)x86\libeay32.dll" (
-      CD "$(MSBuildThisFileDirectory)"
-      CALL build_win32.bat
-      )</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup />
 </Project>
