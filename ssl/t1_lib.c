@@ -342,19 +342,11 @@ static unsigned char tls12_sigalgs[] = {
 #ifndef OPENSSL_NO_SHA
 	tlsext_sigalg(TLSEXT_hash_sha1)
 #endif
-#ifndef OPENSSL_NO_MD5
-	tlsext_sigalg_rsa(TLSEXT_hash_md5)
-#endif
 };
 
 int tls12_get_req_sig_algs(SSL *s, unsigned char *p)
 	{
 	size_t slen = sizeof(tls12_sigalgs);
-#ifdef OPENSSL_FIPS
-	/* If FIPS mode don't include MD5 which is last */
-	if (FIPS_mode())
-		slen -= 2;
-#endif
 	if (p)
 		memcpy(p, tls12_sigalgs, slen);
 	return (int)slen;
@@ -668,6 +660,36 @@ unsigned char *ssl_add_clienthello_tlsext(SSL *s, unsigned char *p, unsigned cha
 			}
                 ret += el;
                 }
+#endif
+
+#ifdef TLSEXT_TYPE_padding
+	/* Add padding to workaround bugs in F5 terminators.
+	 * See https://tools.ietf.org/html/draft-agl-tls-padding-02
+	 *
+	 * NB: because this code works out the length of all existing
+	 * extensions it MUST always appear last.
+	 */
+	{
+	int hlen = ret - (unsigned char *)s->init_buf->data;
+	/* The code in s23_clnt.c to build ClientHello messages includes the
+	 * 5-byte record header in the buffer, while the code in s3_clnt.c does
+	 * not. */
+	if (s->state == SSL23_ST_CW_CLNT_HELLO_A)
+		hlen -= 5;
+	if (hlen > 0xff && hlen < 0x200)
+		{
+		hlen = 0x200 - hlen;
+		if (hlen >= 4)
+			hlen -= 4;
+		else
+			hlen = 0;
+
+		s2n(TLSEXT_TYPE_padding, ret);
+		s2n(hlen, ret);
+		memset(ret, 0, hlen);
+		ret += hlen;
+		}
+	}
 #endif
 
 	if ((extdatalen = ret-p-2)== 0) 
@@ -1269,7 +1291,7 @@ int ssl_parse_clienthello_tlsext(SSL *s, unsigned char **p, unsigned char *d, in
 				}
 			}
 		else if (type == TLSEXT_TYPE_status_request &&
-		         s->version != DTLS1_VERSION && s->ctx->tlsext_status_cb)
+		         s->version != DTLS1_VERSION)
 			{
 		
 			if (size < 5) 
@@ -2452,14 +2474,6 @@ const EVP_MD *tls12_get_hash(unsigned char hash_alg)
 	{
 	switch(hash_alg)
 		{
-#ifndef OPENSSL_NO_MD5
-		case TLSEXT_hash_md5:
-#ifdef OPENSSL_FIPS
-		if (FIPS_mode())
-			return NULL;
-#endif
-		return EVP_md5();
-#endif
 #ifndef OPENSSL_NO_SHA
 		case TLSEXT_hash_sha1:
 		return EVP_sha1();
