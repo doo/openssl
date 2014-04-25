@@ -1,5 +1,5 @@
 # local ActivePerl and NASM copy to build on Windows
-ActivePerl-*/
+strawberry_perl*/
 nasm-*/
 # binary outputs and temporary directories
 out32dll/
