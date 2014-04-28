@@ -4,8 +4,12 @@ nasm-*/
 # binary outputs and temporary directories
 out32dll/
 tmp32dll/
+tmp32dll.dbg/
+out32dll.dbg/
 x64/
 x86/
+x64.dbg/
+x86.dbg/
 
 #generated during configure for Win32/Win64
 MINFO
