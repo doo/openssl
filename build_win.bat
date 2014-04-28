@@ -11,6 +11,11 @@ if not defined OUTDIR (
 	exit /b 1
 )
 
+IF EXIST %OUTDIR%\bin\libeay32.dll (
+	echo OpenSSL already built. Remove %OUTDIR% to force rebuilding.
+	exit /b 0
+)
+
 SET MSVC=12
 if "%2" == "11" set MSVC=%2
 
