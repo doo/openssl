@@ -1,0 +1,8 @@
+language: c
+
+compiler:
+  - gcc
+
+script:
+  - ./config threads zlib-dynamic shared
+  - make depend && make && make tests
